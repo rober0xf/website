@@ -1,0 +1,247 @@
+---
+title: "How to add OAuth to your Go app"
+topic: "Authentication"
+imgUrl: "/post-images/oauth.png"
+publishedAt: "2026-07-03"
+---
+
+## Introduction
+In this article, we'll build Google OAuth authentication for a Go backend.
+
+Instead of creating an account with an email and password, we'll let Google handle authentication and then use our own JWT for authenticated requests.
+
+Google OAuth also removes the need to:
+- store passwords
+- handle password resets
+- verify emails manually
+
+Once Google has verified the user's identity, our application only needs to trust the information returned by Google's OAuth API and generate its own authentication token.
+
+## OAuth Flow Overview
+
+The authentication flow is like this:
+
+1. The frontend redirects the user to Google's OAuth.
+2. The user logs into Google and accepts permissions.
+3. Google redirects the user back to the backend callback URL.
+4. The backend exchanges the authorization code for user information.
+5. The backend creates its own JWT token.
+6. The user is now authenticated in the application.
+
+## Creating the OAuth Use Case
+In this application we are following a clean architecture approach, all the OAuth business logic lives inside its own use case.
+
+The use case depends on two interfaces:
+
+- UserRepository, responsible for creating and retrieving users.
+- TokenGenerator, responsible for generating JWTs after authentication succeeds.
+
+```go
+type GoogleOAuthUseCase struct {
+	userRepo repository.UserRepository
+	tokenGen auth.TokenGenerator
+}
+```
+
+### Handling existing and new users
+
+Before interacting with the database, we need to do a validation to ensure Google returned the information we expect.
+
+To avoid repeating the JWT generation logic every time a user successfully authenticates, I did this helper method:
+```go
+func (uc *GoogleOAuthUseCase) buildLoginOutput(user *entity.User) (*LoginOutput, error) {
+	token, err := uc.tokenGen.Generate(user.ID, user.Email, user.Role)
+	if err != nil {
+		return nil, fmt.Errorf("GoogleOAuthUC.buildLoginOutput failed to generate token: %w", err)
+	}
+
+	return &LoginOutput{Token: token, User: user}, nil
+}
+```
+
+The authentication flow then follows these steps:
+
+1. Validate the required fields returned by Google.
+2. Look for an existing user with the same google_id.
+3. If one exists, authenticate that user immediately.
+4. Otherwise, search for a user with the same email address.
+5. If an email match is found, link the Google account to the existing user.
+6. If no user exists, create a new account using the information provided by Google.
+
+```go
+func (uc *GoogleOAuthUseCase) Execute(ctx context.Context, googleID, email, name string) (*LoginOutput, error) {
+	if googleID == "" {
+		return nil, domainErr.ErrInvalidGoogleID
+	}
+
+	if email == "" {
+		return nil, domainErr.ErrInvalidEmailFormat
+	}
+
+	// search for google_id
+	user, err := uc.userRepo.GetUserByGoogleID(ctx, googleID)
+	if err == nil {
+		return uc.buildLoginOutput(user)
+	}
+
+	if !errors.Is(err, repoErr.ErrNotFound) {
+		return nil, fmt.Errorf("GoogleOAuthUC.Execute failed to get user by google id: %w", err)
+	}
+
+	// search for email
+	user, err = uc.userRepo.GetUserByEmail(ctx, email)
+	if err != nil && !errors.Is(err, repoErr.ErrNotFound) {
+		return nil, fmt.Errorf("GoogleOAuthUC.Execute failed to get user by email: %w", err)
+	}
+
+	// if exists then link account
+	if user != nil {
+		err = uc.userRepo.UpdateUserGoogleID(ctx, user.ID, googleID)
+		if err != nil {
+			switch {
+			case errors.Is(err, repoErr.ErrNotFound):
+				return nil, domainErr.ErrUserNotFound
+			case errors.Is(err, repoErr.ErrGoogleExists):
+				return nil, auth.ErrGoogleAccountAlreadyLinked
+			default:
+				return nil, fmt.Errorf("GoogleOAuthUC.Execute failed to link google account: %w", err)
+			}
+		}
+
+		user.GoogleID = googleID
+		return uc.buildLoginOutput(user)
+	}
+
+	// if it doesnt exists then create user
+	user, err = uc.userRepo.CreateOAuthUser(ctx, email, name, googleID)
+	if err != nil {
+		return nil, fmt.Errorf("GoogleOAuthUC.Execute failed to create oauth user: %w", err)
+	}
+
+	return uc.buildLoginOutput(user)
+}
+```
+#### Why do we search by Google ID instead of Email?
+We do it that way because email is only used to link to a local account. Then we won't use it again, we will use the Google ID related.
+
+Using google_id is the primary identity for OAuth logins.
+
+This also avoids unnecessary database queries and prevents duplicated accounts.
+
+## Creating the Google Login Endpoint
+Once the frontend gets the Google ID token, it sends it to our backend through a login endpoint.
+```go
+users.POST("/login/google", userHandler.GoogleLogin)
+```
+
+Unlike traditional email/password authentication, the client doesn't send credentials. It sends the ID token issued by Google.
+
+Our request object is simple:
+```go
+type GoogleLoginRequest struct {
+	IDToken string `json:"id_token" binding:"required" example:"eyGaksdjaldasdj..."`
+}
+```
+
+The handler is responsible for four tasks:
+
+1. Validate the incoming request.
+2. Verify that the Google ID token is valid.
+3. Delegate the authentication logic to the use case.
+4. Return our application's authentication token.
+
+## The logic inside the handler
+In this section we will implement the bullets from above.
+
+### 1. Validate the request
+The first step is ensuring the client actually sent an ID token. This should be inside the handler.
+```go
+var req dto.GoogleLoginRequest
+
+if err := c.ShouldBindJSON(&req); err != nil {
+    c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "id_token is required"})
+    return
+}
+```
+
+### 2. Verifying the Google token
+Receiving an ID token from the client is not enough. Anyone could send an arbitrary string pretending to be a Google token.
+
+Before trusting any of its contents, the backend must verify the token's signature with Google.
+```go
+googleData, err := h.googleVerifier.Verify(req.IDToken)
+if err != nil {
+    c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "invalid google token"})
+    return
+}
+```
+
+### 3. Invoking the use case
+At this point the handler has finished its job.
+
+Here is where we call the use case for finding an existing user, linking accounts, or creating a new account.
+```go
+out, err := h.oauthUC.Execute(c.Request.Context(), googleData.Sub, googleData.Email, googleData.Name)
+if err != nil {
+    switch {
+    case errors.Is(err, domainErr.ErrInvalidGoogleID), errors.Is(err, domainErr.ErrInvalidEmailFormat):
+        c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid user data"})
+    case errors.Is(err, auth.ErrGoogleAccountAlreadyLinked):
+        c.JSON(http.StatusConflict, dto.ErrorResponse{Error: "google account already linked"})
+    default:
+        slog.ErrorContext(c.Request.Context(), "failed to login with oauth", "error", err)
+        c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "internal server error"})
+    }
+
+    return
+}
+```
+
+### 4. Returning the session
+Once the authentication is finished, the backend generates its own JWT and stores it in a cookie. After this, the client authenticates using our application's token rather than Google's ID token. The Google token is only used during the login process.
+```go
+auth.SetAuthCookie(c, out.Token, auth.CookieConfig{
+    Name:            auth.SessionCookieName,
+    TokenExpiration: auth.TokenExpiration,
+    Secure:          false,
+    HttpOnly:        true,
+})
+```
+
+### Sending the Google ID Token
+After the user successfully signs in with Google on the frontend, Google returns an ID token. The frontend then sends this token to our backend.
+
+```ts
+interface GoogleAuthResponse {
+  email: string;
+  token: string;
+}
+
+export const googleAuth = async (
+  idToken: string,
+): Promise<GoogleAuthResponse> => {
+  const response = await fetch(`${API_BASE_URL}/v1/users/login/google`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id_token: idToken,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("google authentication failed");
+  }
+
+  return response.json();
+}
+```
+
+The frontend doesn't send the email or name. It only sends the ID token received from Google.
+
+The backend is responsible for verify the token and extract the user's information. This prevents clients from spoofing user data by sending arbitrary email addresses or Google IDs.
+
+### Check the commit code
+See the whole implementation [commit](https://github.com/rober0xf/notifier/commit/125fc1c63967887c98b887a0d7a63b7fdd6eb438)

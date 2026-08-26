@@ -1,0 +1,165 @@
+---
+title: "How to add email verification to your Go app"
+topic: "Validation"
+imgUrl: "/post-images/go-email-banner.png"
+publishedAt: "2025-10-23"
+---
+
+## Introduction
+In this blog, we will explore how to build an email verification system using Go. This focuses on validating the existence and format of email addresses. And then how to send an Email Verification for an account registration.
+
+#### Request struct 
+We begin by using our user struct such as:
+```go
+type CreateUserRequest struct {
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+```
+
+Here we are doing a simple validation such as require all three fields and enforce a minimum password length. In order to do a more complete validation we need to first install the validation package.
+```bash
+go get github.com/AfterShip/email-verifier 
+```
+<br />
+
+And then we can simply instantiate and use its method.
+```go
+// initialize the email verifier with domain suggestion enabled
+var verifier = emailverifier.NewVerifier().EnableDomainSuggest()
+
+ret, err := verifier.Verify(input.Email)
+if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{"error": "failed to verify email"})
+    return
+}
+if !ret.Syntax.Valid {
+    c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email format"})
+    return
+}
+if !ret.HasMxRecords {
+    c.JSON(http.StatusBadRequest, gin.H{"error": "email domain cannot receive emails"})
+    return
+}
+if ret.Suggestion != "" {
+    c.JSON(http.StatusBadRequest, gin.H{
+        "error":      "invalid email address",
+        "suggestion": ret.Suggestion,
+    })
+    return
+}
+```
+We are validating the email sent, checking if its a valid email and suggesting if there is a common typo.
+<br />
+
+### Sending Email Verification
+Now that we've validated the email address, now we need to send a verification email to confirm the user owns that email. This is important to prevent fake registrations.
+
+We will need to:
+1. Generate a unique verification token
+2. Store it in the database with an expiration time
+3. Send an email with a verification link
+4. Handle the verification callback when users click the link
+<br />
+
+#### Verification token 
+First of all we need to define the verification token, for that we would use the encoding/hex package to create a random token.
+```go
+b := make([]byte, 32)
+if _, err := rand.Read(b); err != nil {
+    return nil, err
+}
+verification_token := hex.EncodeToString(b)
+verification_token_hash := sha256.Sum256([]byte(verification_token))
+```
+We are simply defining an array of bytes and encoding it using the [SHA256](https://en.wikipedia.org/wiki/SHA-2) algorithm to hash it.
+<br />
+
+#### Storing token
+After creating the token and hashing it we would instantiate the model with the data. (we have an "active" field where by default its false and we set it to true after we verify the account).
+```go
+user := &domain.User{
+    Username:              username,
+    Email:                 email,
+    Password:              hashed,
+    Active:                false,
+    EmailVerificationHash: hex.EncodeToString(verification_token_hash[:]),
+    CreatedAt:             time.Now().Format("2006-01-02"),
+    Timeout:               expires_at.Format(time.RFC3339),
+}
+```
+<br />
+
+#### Sending the verification link
+The route for account verification would be something like this.
+```go
+public.GET("/email_verification/:email/:hash", userHandler.GetVerificationEmail)
+```
+<br />
+
+After storing the verification hash into the user model we need to send the email and create the link to verify the account using the email and the token. 
+```go
+url := fmt.Sprintf("http://localhost:3000/v1/users/email_verification/%s/%s", user.Email, verification_token)
+HTMLBody := fmt.Sprintf(`
+    <html>
+        <body>
+            <h1>Email verification</h1>
+            <p>click the link to verify:</p>
+            <a href="%s">verify account</a>
+        </body>
+    </html>
+`, url)
+ms := mail.NewMailSender(
+    database.GetEnvOrFatal("SMTP_HOST"),
+    database.GetEnvOrFatal("SMTP_PORT"),
+    database.GetEnvOrFatal("SMTP_USERNAME"),
+    database.GetEnvOrFatal("SMTP_PASSWORD"),
+)
+if err := mail.SendMail(ms, []string{user.Email}, "verify account", HTMLBody); err != nil {
+    return nil, fmt.Errorf("error sending email verification: %w", err)
+}
+```
+<br />
+
+#### Verified account 
+Finally we handle the user's verification with the respective service and handler.
+```go
+func (s *Service) GetVerificationEmail(email string) (*domain.User, error) {
+	user, err := s.Repo.GetUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	// ensure we activate
+	user.Active = true
+	if err := s.Repo.SetActive(user); err != nil {
+		return nil, dto.ErrActivating
+	}
+	return user, nil
+}
+```
+
+```go
+func (h *userHandler) GetVerificationEmail(c *gin.Context) {
+	email := c.Param("email")
+	hash_str := c.Param("hash")
+
+	if email == "" || hash_str == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid verification link"})
+		return
+	}
+	user, err := h.UserService.GetVerificationEmail(email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user.Password = ""
+	c.JSON(http.StatusOK, gin.H{"message": "email verified successfully", "user": user})
+}
+```
+<br />
+
+### Check the whole code
+See the whole implementation [commit](https://github.com/rober0xf/notifier/commit/c913c3b6102563a01c495835697e994b2c99f97b)
