@@ -1,0 +1,43 @@
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language {
+  font-size: 17px;
+  font-family: var(--font-poppins), sans-serif;
+  color: #b45309;
+}
+
+.status-done {
+  background-color: #16a34a;
+}
+
+.status-done-text {
+  color: #15803d;
+}
+
+.status-online {
+  background-color: #0d9488;
+}
+
+.status-online-text {
+  color: #0f766e;
+}
+
+.status-in-dev {
+  background-color: #ea580c;
+}
+
+.status-in-dev-text {
+  color: #c2410c;
+}
+
+.status-abandoned {
+  background-color: #b91c1c;
+}
+
+.status-abandoned-text {
+  color: #b91c1c;
+}

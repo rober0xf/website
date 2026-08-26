@@ -1,0 +1,53 @@
+/* RECENT SONG */
+.recent-song {
+  display: flex;
+  justify-content: center;
+}
+
+.recent-song-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.recent-song-art {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.recent-song-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.recent-song-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #57534e;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.recent-song-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #1e40af;
+  animation: glow 3s infinite alternate;
+}
+
+.recent-song-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1c1917;
+}
+.recent-song-artist {
+  font-size: 0.75rem;
+  color: #57534e;
+}
