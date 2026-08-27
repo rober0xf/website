@@ -12,12 +12,13 @@ export const StepComponent = ({ step, children }: Props) => {
   return (
     <Link
       href={step.href}
-      className="mb-5 flex cursor-pointer flex-col gap-3 rounded-xl border-2 border-solid border-stone-300 bg-white p-4 duration-200 hover:border-[#1e40af] sm:p-5"
+      className="group flex h-full w-full flex-col items-center justify-between"
     >
-      <h3 className="poppins mb-4 text-[#1e40af] sm:text-xl md:text-2xl">
+      <h3 className="poppins text-lg font-medium text-[#1e40af] sm:text-xl">
         {step.name}
       </h3>
-      {children}
+
+      <div className="mt-auto pt-2 text-sm text-stone-500">{children}</div>
     </Link>
   );
 };

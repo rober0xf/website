@@ -12,8 +12,7 @@ export const HomeComponent = () => {
     {
       name: "Notifier",
       href: "/projects#notifier",
-      description:
-        "Backend service for scheduling and delivering payments reminders.",
+      description: "Scheduling and delivering payments reminders.",
     },
     {
       name: "Prosenos",
@@ -24,13 +23,13 @@ export const HomeComponent = () => {
   ];
 
   return (
-    <main className="w-full justify-center">
+    <main className="w-full">
       {/* myself section */}
       <section
         id="intro_page"
-        className="flex w-full justify-center gap-6 px-4 py-6 sm:px-6"
+        className="mx-auto flex w-full max-w-4xl justify-center px-4 py-12 sm:px-6"
       >
-        <div className="mx-auto w-full max-w-2xl">
+        <div className="w-full text-center">
           <h3 className="poppins text-lg sm:text-xl">
             Third-year Argentine Systems Engineering student focused on{" "}
             <span className="font-semibold text-[#1e40af]">
@@ -41,26 +40,28 @@ export const HomeComponent = () => {
               distributed systems.
             </span>
           </h3>
-          <p className="poppins pt-1 text-sm sm:text-base">
+          <p className="poppins pt-2 text-sm sm:text-base">
             I primarily build with Go and Python. You can also find me on{" "}
             <a
               href="https://x.com/roberpili"
               className="poppins font-semibold hover:text-[#1e40af]"
               target="_blank"
+              rel="noreferrer"
             >
               x dot com.
             </a>
           </p>
-          <h2 className="garamond mt-16 text-center text-2xl text-stone-500">
+          <h2 className="garamond mt-12 text-2xl text-stone-500">
             &quot;Overthinking, overanalyzing, separates the body from the
             mind.&quot; - TOOL
           </h2>
         </div>
       </section>
 
-      <div className="mx-auto mt-16 h-px w-32 bg-stone-300" />
+      <div className="mx-auto h-px w-32 bg-stone-300" />
+
       {/* now strip */}
-      <section className="mx-auto w-full max-w-5xl py-14 text-center">
+      <section className="mx-auto w-full max-w-4xl py-12 text-center px-4 sm:px-6">
         <p className="poppins text-sm text-stone-500 select-none sm:text-base">
           <span className="font-medium text-[#1e40af]">now</span>
           {" · "}
@@ -69,22 +70,33 @@ export const HomeComponent = () => {
           building my own personal CLI assistant
         </p>
       </section>
+
       <div className="mx-auto h-px w-32 bg-stone-300" />
 
       {/* recent song */}
       <RecentSongComponent />
 
+      <div className="mx-auto h-px w-32 bg-stone-300" />
+
       {/* projects section */}
-      <section id="projects" className="mx-auto w-full max-w-5xl lg:py-24">
-        <h3 className="mb-8 text-xl font-normal select-none sm:text-2xl">
+      <section
+        id="projects"
+        className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6"
+      >
+        <h3 className="mb-8 text-center text-xl font-normal text-stone-500 select-none sm:text-2xl">
           featured projects
         </h3>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex w-full flex-col gap-5 sm:flex-row">
           {steps.map((step) => (
-            <StepComponent key={step.name} step={step}>
-              <p>{step.description}</p>
-            </StepComponent>
+            <div
+              key={step.name}
+              className="flex flex-1 flex-col items-center border border-stone-300 p-8 text-center transition-colors duration-200 hover:border-[#1e40af]"
+            >
+              <StepComponent step={step}>
+                <p>{step.description}</p>
+              </StepComponent>
+            </div>
           ))}
         </div>
       </section>
