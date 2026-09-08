@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ReadingStatus, type Book } from "@/lib/types";
 import Image from "next/image";
+import "@/app/styles/books.css";
 
 interface Props {
   books: Book[];
@@ -22,7 +23,7 @@ export const BookCardComponent = ({ books }: Props) => {
   };
 
   return (
-    <section className="space-y-6">
+    <section>
       {sections.map(({ key, label, status }) => {
         const filtered = books.filter((b) => b.status === status);
 
@@ -40,7 +41,12 @@ export const BookCardComponent = ({ books }: Props) => {
                 {filtered.map((book) => (
                   <div className="book-card" key={book.title}>
                     <div className="book-image">
-                      <Image src={book.url} alt={book.title} />
+                      <Image
+                        width={150}
+                        height={200}
+                        src={book.url}
+                        alt={book.title}
+                      />
                     </div>
 
                     <div className="book-content">
