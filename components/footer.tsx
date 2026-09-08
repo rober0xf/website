@@ -1,3 +1,5 @@
+import "@/app/styles/footer.css";
+
 type SocialIcon = {
   name: string;
   url: string;
@@ -24,12 +26,10 @@ export const FooterComponent = () => {
   ];
 
   return (
-    <footer className="flex w-full items-center justify-between border-t border-stone-200">
-      <div className="poppins text-stone-500">
-        <p>&copy; {new Date().getFullYear()} Rober</p>
-      </div>
+    <footer className="footer-line">
+      <div className="footer-text">&copy; {new Date().getFullYear()} Rober</div>
 
-      <div className="social-icons flex gap-1">
+      <nav className="social-icons" aria-label="networks">
         {icons.map(({ icon, name, url }) => (
           <a
             key={url}
@@ -41,7 +41,7 @@ export const FooterComponent = () => {
             <i className={icon} aria-hidden="true"></i>
           </a>
         ))}
-      </div>
+      </nav>
     </footer>
   );
 };
