@@ -1,5 +1,6 @@
 import { StepComponent } from "@/components/step";
 import { RecentSongComponent } from "./recent-song";
+import "@/app/styles/home.css";
 
 type StepType = {
   name: string;
@@ -23,76 +24,62 @@ export const HomeComponent = () => {
   ];
 
   return (
-    <main className="w-full">
+    <main>
       {/* myself section */}
-      <section
-        id="intro_page"
-        className="mx-auto flex w-full max-w-4xl justify-center px-4 py-12 sm:px-6"
-      >
-        <div className="w-full text-center">
-          <h3 className="poppins text-lg sm:text-xl">
-            Third-year Argentine Systems Engineering student focused on{" "}
-            <span className="font-semibold text-[#1e40af]">
-              backend engineering
-            </span>
-            . Interested in{" "}
-            <span className="font-semibold text-[#1e40af]">
-              distributed systems.
-            </span>
-          </h3>
-          <p className="poppins pt-2 text-sm sm:text-base">
-            I primarily build with Go and Python. You can also find me on{" "}
+      <section className="home-container">
+        <div className="now-section">
+          <h1 className="intro-text">
+            I am a systems engineering student focused on{" "}
+            <span className="blue-text">backend engineering</span>. Interested
+            in <span className="blue-text">distributed systems</span> and{" "}
+            <span className="blue-text">system design.</span>
+          </h1>
+          <p className="subintro-text">
+            I primarily build with Python and Go. You can also find me on{" "}
             <a
               href="https://x.com/roberpili"
-              className="poppins font-semibold hover:text-[#1e40af]"
+              className="tw-text"
               target="_blank"
               rel="noreferrer"
             >
               x dot com.
             </a>
           </p>
-          <h2 className="garamond mt-12 text-2xl text-stone-500">
+          <blockquote className="quote">
             &quot;Overthinking, overanalyzing, separates the body from the
             mind.&quot; - TOOL
-          </h2>
+          </blockquote>
         </div>
       </section>
 
-      <div className="mx-auto h-px w-32 bg-stone-300" />
+      <hr className="section-separator" />
 
-      {/* now strip */}
-      <section className="mx-auto w-full max-w-4xl py-12 text-center px-4 sm:px-6">
-        <p className="poppins text-sm text-stone-500 select-none sm:text-base">
-          <span className="font-medium text-[#1e40af]">now</span>
+      {/* now section */}
+      <section className="now-section">
+        <p>
+          <span className="blue-text">now</span>
           {" · "}
           learning aws and typescript
           {" — "}
-          building my own personal CLI assistant
+          doing the odin project
         </p>
       </section>
+      {/* end now section */}
 
-      <div className="mx-auto h-px w-32 bg-stone-300" />
+      <hr className="section-separator" />
 
       {/* recent song */}
       <RecentSongComponent />
 
-      <div className="mx-auto h-px w-32 bg-stone-300" />
+      <hr className="section-separator" />
 
       {/* projects section */}
-      <section
-        id="projects"
-        className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6"
-      >
-        <h3 className="mb-8 text-center text-xl font-normal text-stone-500 select-none sm:text-2xl">
-          featured projects
-        </h3>
+      <section className="projects-section">
+        <h2>featured projects</h2>
 
-        <div className="flex w-full flex-col gap-5 sm:flex-row">
+        <div className="projects-list">
           {steps.map((step) => (
-            <div
-              key={step.name}
-              className="flex flex-1 flex-col items-center border border-stone-300 p-8 text-center transition-colors duration-200 hover:border-[#1e40af]"
-            >
+            <div key={step.name} className="featured-project">
               <StepComponent step={step}>
                 <p>{step.description}</p>
               </StepComponent>
@@ -100,6 +87,7 @@ export const HomeComponent = () => {
           ))}
         </div>
       </section>
+      {/* end projects section */}
     </main>
   );
 };
