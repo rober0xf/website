@@ -1,3 +1,5 @@
+import "@/app/styles/ascii.css";
+
 export const AsciiComponent = () => {
   const asciiArt = `
                                                  ...
@@ -55,19 +57,5 @@ export const AsciiComponent = () => {
                                                     .:.
                                                     ...
     `;
-  return (
-    <pre
-      className="pt-10 py-20 text-red-800 mx-auto"
-      style={{
-        fontFamily: "monospace",
-        whiteSpace: "pre",
-        lineHeight: 1,
-        fontSize: 12,
-        width: "fit-content",
-        transform: "translateX(-24%)"
-      }}
-    >
-      {asciiArt}
-    </pre>
-  );
+  return <pre className="ascii">{asciiArt}</pre>;
 };
