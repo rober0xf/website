@@ -1,50 +1,55 @@
 import { AsciiComponent } from "@/components/ascii";
 import { ProjectCardComponent } from "@/components/project-card";
 import { PROJECTS } from "@/lib/projects";
+import "@/app/styles/projects.css";
 
 export const ProjectsComponent = () => {
   if (PROJECTS.length === 0) {
     return (
       <>
-        <div className="empty text-center font-medium text-red-800">
-          No projects yet
-        </div>
+        <div>No projects yet</div>
         <AsciiComponent />
       </>
     );
   }
 
   return (
-    <div className="post-wrapper">
-      <div className="post-container">
-        {PROJECTS.map((project, index) => (
-          <div key={project.name}>
-            <article
-              id={project.name.toLowerCase()}
-              className="project-card scroll-mt-24"
-            >
-              <h2 className="post-title font-sans">
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#1e40af]"
-                >
-                  {project.name}
-                </a>
-              </h2>
+    <section className="projects-section" aria-labelledby="projects-heading">
+      <div className="projects-container">
+        <h1 id="projects-heading" className="visually-hidden">
+          Projects
+        </h1>
 
-              <ProjectCardComponent project={project} />
+        <div className="projects-list">
+          {PROJECTS.map((project, index) => (
+            <div key={project.name} className="projects-item">
+              <article
+                id={project.name.toLowerCase()}
+                className="projects-card"
+              >
+                <h2 className="projects-title">
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="projects-link"
+                  >
+                    {project.name}
+                  </a>
+                </h2>
 
-              <p className="post-description">{project.description}</p>
-            </article>
+                <ProjectCardComponent project={project} />
 
-            {index < PROJECTS.length - 1 && (
-              <div className="mx-auto h-px my-10 w-40 bg-stone-300" />
-            )}
-          </div>
-        ))}
+                <p className="projects-description">{project.description}</p>
+              </article>
+
+              {index < PROJECTS.length - 1 && (
+                <hr className="projects-divider" />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };

@@ -1,43 +1,150 @@
+.projects-section,
+.projects-container {
+    width: 100%;
+}
+
+.projects-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 2rem;
+}
+
+.projects-container {
+    display: grid;
+    gap: 4rem;
+    max-width: 56.25rem;
+}
+
+.projects-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.projects-item {
+    margin: 0;
+    padding: 0;
+}
+
+.projects-card {
+    scroll-margin-top: 6rem;
+}
+
+.projects-title {
+    margin: 0 0 0.625rem;
+    font-family: var(--font-poppins), sans-serif;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.projects-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 150ms ease;
+}
+
+.projects-link:hover {
+    color: #1e40af;
+}
+
+.projects-description {
+    margin-top: 0.9375rem;
+    padding-block: 0.625rem;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.projects-divider {
+    margin-inline: auto;
+    margin-block: 2.5rem;
+    height: 1px;
+    width: 10rem;
+    border: 0;
+    background-color: #d6d3d1;
+}
+
+.projects-link:focus-visible {
+    outline: 2px solid #1e40af;
+    outline-offset: 3px;
+}
+
+/* card */
 .project-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.language {
-  font-size: 17px;
-  font-family: var(--font-poppins), sans-serif;
-  color: #b45309;
+.project-language,
+.project-status {
+    margin: 0;
 }
 
+.project-language {
+    font-size: 17px;
+    color: #b45309;
+}
+
+.project-status {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    gap: 0.25rem;
+}
+
+.status-indicator {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+}
+
+.status-label {
+    text-transform: capitalize;
+}
+
+/* status colors */
 .status-done {
-  background-color: #16a34a;
+    background-color: #16a34a;
 }
 
 .status-done-text {
-  color: #15803d;
+    color: #15803d;
 }
 
 .status-online {
-  background-color: #0d9488;
+    background-color: #0d9488;
 }
 
 .status-online-text {
-  color: #0f766e;
+    color: #0f766e;
 }
 
 .status-in-dev {
-  background-color: #ea580c;
+    background-color: #ea580c;
 }
 
 .status-in-dev-text {
-  color: #c2410c;
+    color: #c2410c;
 }
 
 .status-abandoned {
-  background-color: #b91c1c;
+    background-color: #b91c1c;
 }
 
 .status-abandoned-text {
-  color: #b91c1c;
+    color: #b91c1c;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
