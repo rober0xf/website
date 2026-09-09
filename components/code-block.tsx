@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import { CheckIconComponent } from "./svg/check-icon";
 import { CopyIconComponent } from "./svg/copy-icon";
+import "@/app/styles/markdown.css";
 
 interface Props {
   children: ReactNode;
