@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import "@/app/styles/music-wave.css";
 
 // pseudo random generator
 const getStableRandom = (index: number, seed: number) => {
@@ -29,25 +30,9 @@ export const SongWave = ({ bars = 25 }: { bars?: number }) => {
   }, [bars]);
 
   return (
-    <div className="relative h-[24px] w-full overflow-hidden block">
-      <style jsx>{`
-        @keyframes audio-wave {
-          0%,
-          100% {
-            height: 3px;
-          }
-          50% {
-            height: var(--max-height, 18px);
-          }
-        }
-      `}</style>
-
-      {barStyles.map((style, i) => (
-        <span
-          key={i}
-          className="absolute bottom-0 w-[2px] bg-[#579BEA] block rounded-full"
-          style={style}
-        />
+    <div className="audio-wave" aria-hidden="true">
+      {barStyles.map((style, index) => (
+        <span key={index} className="audio-wave-bar" style={style} />
       ))}
     </div>
   );
