@@ -1,44 +1,56 @@
 .post-title {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  transition: color 0.3s;
+    margin: 0 0 0.625rem;
+    text-align: center;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.post-title:hover {
+    color: #1e40af;
 }
 
 .post-description {
-  font-size: 1.2rem;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  line-height: 1.6;
-  margin-top: 15px;
+    margin-top: 0.9375rem;
+    padding-block: 0.625rem;
+    font-size: 1.2rem;
+    line-height: 1.6;
 }
 
 .post-topic {
-  color: #57534e;
-  text-align: right;
+    color: #57534e;
+    text-align: right;
 }
 
-/* also used in projects */
+.post-topic span {
+    font-weight: 500;
+    color: #1e40af;
+}
+
 .post-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  padding: 2rem;
+    display: flex;
+    min-height: 60vh;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
 }
 
 .post-container {
-  display: grid;
-  gap: 4rem;
-  max-width: 900px;
-  width: 100%;
+    display: grid;
+    width: 100%;
+    max-width: 56.25rem;
+    gap: 4rem;
 }
 
 .post-card {
-  border-radius: 8px;
-  padding: 1.5rem 0;
+    border-radius: 0.5rem;
+    padding-block: 1.5rem;
 }
 
-.project-card {
-  border-radius: 8px;
+.separator {
+    margin-inline: auto;
+    margin-block: 2.5rem;
+    height: 1px;
+    width: 10rem;
+    border: 0;
+    background-color: #d6d3d1;
 }
