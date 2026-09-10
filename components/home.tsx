@@ -74,10 +74,10 @@ export const HomeComponent = () => {
       <hr className="section-separator" />
 
       {/* projects section */}
-      <section className="projects-section">
+      <section className="featured-section">
         <h2>featured projects</h2>
 
-        <div className="projects-list">
+        <div className="featured-list">
           {steps.map((step) => (
             <div key={step.name} className="featured-project">
               <StepComponent step={step}>

@@ -41,11 +41,11 @@
 /* shared properties */
 .home-container,
 .now-section,
-.projects-section {
+.featured-section {
     width: 100%;
     max-width: 56rem;
     margin-inline: auto;
-    padding: 2rem;
+    padding: 3rem 1rem;
 }
 
 .home-container {
@@ -64,7 +64,7 @@
     font-size: 0.875rem;
 }
 
-.projects-section h2 {
+.featured-section h2 {
     font-family: var(--font-poppins), sans-serif;
     margin: 0 0 2rem;
     color: #78716c;
@@ -73,7 +73,7 @@
     font-weight: 400;
 }
 
-.projects-list {
+.featured-list {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -107,16 +107,16 @@
 @media (min-width: 640px) {
     .home-container,
     .now-section,
-    .projects-section {
+    .featured-section {
         padding-inline: 1.5rem;
     }
     .now-section p {
         font-size: 1rem;
     }
-    .projects-section h2 {
+    .featured-section h2 {
         font-size: 1.5rem;
     }
-    .projects-list {
+    .featured-list {
         flex-direction: row;
     }
 }
