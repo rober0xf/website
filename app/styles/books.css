@@ -13,26 +13,28 @@
 }
 
 .book-content {
+    font-family: var(--font-poppins), sans-serif;
     width: 100%;
     display: flex;
     justify-content: center;
     color: #1c1917;
-    font-size: 14px;
     text-align: center;
     padding-top: 1rem;
 }
 
 .book-image:hover + .book-content {
     color: #1e40af;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .book-info {
+    font-family: var(--font-poppins), sans-serif;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     font-weight: 500;
+    font-size: 14px;
     gap: 0.3rem;
 }
 
@@ -51,6 +53,7 @@
     border: 0;
     background: transparent;
     font-weight: bold;
+    font-size: 16px;
     text-transform: uppercase;
     text-align: left;
     cursor: pointer;

@@ -6,6 +6,7 @@ footer {
 }
 
 .footer-text {
+    font-family: var(--font-poppins), sans-serif;
     color: #79716b;
 }
 
@@ -32,7 +33,13 @@ footer {
     margin: 0 10px;
     color: #44403c;
     font-size: 24px;
+    text-decoration: none;
     transition: color 0.3s;
+}
+
+.social-icons i {
+    font-style: normal;
+    line-height: 1;
 }
 
 .social-icons a:hover {

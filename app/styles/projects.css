@@ -18,9 +18,13 @@
 }
 
 .projects-list {
+    font-family: var(--font-poppins), sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
     list-style: none;
+    color: #292524;
 }
 
 .projects-item {
@@ -33,16 +37,20 @@
 }
 
 .projects-title {
+    color: #292524;
     margin: 0 0 0.625rem;
-    font-family: var(--font-poppins), sans-serif;
     text-align: center;
     font-size: 1.5rem;
 }
 
 .projects-link {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    font-weight: 400;
     color: inherit;
     text-decoration: none;
-    transition: color 150ms ease;
+    transition: color 0.3s;
 }
 
 .projects-link:hover {
@@ -50,8 +58,9 @@
 }
 
 .projects-description {
-    margin-top: 0.9375rem;
-    padding-block: 0.625rem;
+    margin-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     font-size: 1.2rem;
     line-height: 1.6;
 }

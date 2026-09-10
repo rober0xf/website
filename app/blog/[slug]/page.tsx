@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PostHeaderComponent } from "@/components/post-header";
 import { getPostMetadata, getPostSlugs } from "@/lib/posts";
 import "../../prism-light.css";
+import "@/app/styles/markdown.css";
 
 export const dynamicParams = false;
 
@@ -30,10 +31,10 @@ export default async function Page({
   const { default: Post } = await import(`@/posts/${slug}.mdx`);
 
   return (
-    <article>
+    <article className="post-article">
       <PostHeaderComponent metadata={metadata} />
 
-      <div className="prose prose-stone max-w-none px-4 py-4">
+      <div className="prose-content">
         <Post />
       </div>
     </article>

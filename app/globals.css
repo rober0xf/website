@@ -1,31 +1,58 @@
-@import "tailwindcss";
-@import "./styles/recent-song.css";
 @import "./styles/secret-numbers.css";
-@import "./styles/posts.css";
-@import "./styles/projects.css";
-@import "./styles/books.css";
-@import "./styles/markdown.css";
-@plugin "@tailwindcss/typography";
 
-@theme inline {
-    --font-sans: var(--font-poppins);
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 html,
 body {
-    scroll-behavior: smooth;
+    display: flex;
     margin: 0;
-    min-height: 100%;
+    min-height: 100vh;
+    flex-direction: column;
     background-color: #faf9f6;
 }
 
-body {
-    font-family: var(--font-poppins), sans-serif;
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+body,
 h1,
 h2,
 h3,
 .poppins {
     font-family: var(--font-poppins), sans-serif;
+}
+
+.site-content {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 1rem 0 2rem;
+    font-size: 0.875rem;
+}
+
+.site-content-inner {
+    flex: 1;
+}
+
+.site-marquee {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .site-content {
+        font-size: 1rem;
+    }
 }
