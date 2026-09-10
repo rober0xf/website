@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "@/app/styles/step.css";
 
 interface Props {
   step: {
@@ -10,15 +11,10 @@ interface Props {
 
 export const StepComponent = ({ step, children }: Props) => {
   return (
-    <Link
-      href={step.href}
-      className="group flex h-full w-full flex-col items-center justify-between"
-    >
-      <h3 className="poppins text-lg font-medium text-[#1e40af] sm:text-xl">
-        {step.name}
-      </h3>
+    <Link href={step.href} className="step-link">
+      <h3 className="step-title">{step.name}</h3>
 
-      <div className="mt-auto pt-2 text-sm text-stone-500">{children}</div>
+      <div className="step-description">{children}</div>
     </Link>
   );
 };
